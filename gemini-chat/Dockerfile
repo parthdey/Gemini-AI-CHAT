@@ -1,14 +1,19 @@
-# Use a lightweight Java 21 runtime
-FROM eclipse-temurin:21-jdk-alpine
+# 1. Use JDK for building
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
-# Set working directory
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
 
-# Copy the JAR built by Maven into the container
-COPY target/gemini-chat-0.0.1-SNAPSHOT.jar app.jar
+# Package the application (skip tests for speed)
+RUN mvn clean package -DskipTests
 
-# Expose port 8080
+# 2. Use slim JRE for running
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+COPY --from=builder /app/target/gemini-chat-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
 
-# Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]
