@@ -13,11 +13,6 @@ public class AIController {
 
     private final QnAService qnAService;
 
-    @GetMapping("/api/health")
-    public String health() {
-        return "Backend is running!";
-    }
-
     @PostMapping("/ask")
     public ResponseEntity<String> askQuestion(@RequestBody Map<String, String> payload) {
         String question = payload.get("question");
