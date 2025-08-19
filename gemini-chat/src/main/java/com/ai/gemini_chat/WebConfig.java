@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:5173",              // Dev
-                        "https://gemini-ai-chat-n4a4.vercel.app/"    // Prod
+                        "https://gemini-ai-chat-n4a4.vercel.app"    // Prod
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
