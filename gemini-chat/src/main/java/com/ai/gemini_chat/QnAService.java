@@ -30,13 +30,20 @@ public class QnAService {
                 }
         );
 
-        // Gemini API call (API key in header)
+        // API URL with key as query param
+        String urlWithKey = geminiApiUrl + "?key=" + geminiApiKey;
+
+        // API call with error logging
         return webClient.post()
-                .uri(geminiApiUrl)
-                .header("Authorization", "Bearer " + geminiApiKey)
+                .uri(urlWithKey)
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()
+                .onStatus(
+                        status -> status.isError(),
+                        clientResponse -> clientResponse.bodyToMono(String.class)
+                                .map(body -> new RuntimeException("Gemini API error: " + body))
+                )
                 .bodyToMono(String.class)
                 .block();
     }
