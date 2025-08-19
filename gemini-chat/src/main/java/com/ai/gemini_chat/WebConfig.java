@@ -10,8 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "http://localhost:5173",              // Dev
-                        "https://gemini-ai-chat-apdb.vercel.app"    // Prod
+                        "http://localhost:5173",
+                        "https://gemini-ai-chat-n4a4.vercel.app",
+                        "https://gemini-ai-chat-apdb.vercel.app"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
