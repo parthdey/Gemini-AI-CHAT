@@ -7,7 +7,7 @@ export const fetchChatResponse = async (question) => {
     const response = await axios.post(API_URL, { question });
     return response.data;
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching chat response:", error.response?.data || error.message);
     throw error;
   }
 };
