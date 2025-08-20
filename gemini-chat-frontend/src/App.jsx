@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import ChatInput from "./components/ChatInput";
 import { fetchChatResponse } from './services/api';
-import AuthCard from "./components/AuthCard"; // 👈 new import
+import AuthCard from "./components/AuthCard";
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const chatEndRef = useRef(null); // 👈 always declared
 
   // ✅ Check localStorage for saved user
   useEffect(() => {
@@ -20,7 +21,6 @@ function App() {
     setMessages(prev => [...prev, { sender: "user", text: question }]);
     try {
       const apiResponse = await fetchChatResponse(question);
-      // Extract safe text
       const botMessage = apiResponse?.candidates?.[0]?.content?.parts?.[0]?.text 
         || "⚠️ No response from Gemini";
 
@@ -32,30 +32,38 @@ function App() {
     }
   };
 
-  // 👇 Show AuthCard first if no user is logged in
-  if (!user) {
-    return <AuthCard onLogin={setUser} />;
-  }
+  // 👇 Auto-scroll
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   return (
     <div className='App'>
-      <header className='bg-primary text-white text-center py-4'>
-        <h1>Gemini ChatBot</h1>
-        <small>Welcome, {user} 👋</small>
-      </header>
+      {/* If no user, show Auth screen */}
+      {!user ? (
+        <AuthCard onLogin={setUser} />
+      ) : (
+        <>
+          <header className='bg-primary text-white text-center py-4'>
+            <h1>Gemini ChatBot</h1>
+            <small>Welcome, {user} 👋</small>
+          </header>
 
-      {/* Chat Window */}
-      <div className="chat-window p-3">
-        {messages.map((msg, idx) => (
-          <div key={idx} className={msg.sender === "user" ? "user-msg" : "bot-msg"}>
-            {msg.text}
+          {/* Chat Window */}
+          <div className="chat-window p-3">
+            {messages.map((msg, idx) => (
+              <div key={idx} className={msg.sender === "user" ? "user-msg" : "bot-msg"}>
+                {msg.text}
+              </div>
+            ))}
+            {loading && <div className="bot-msg typing">...</div>}
+            <div ref={chatEndRef} />
           </div>
-        ))}
-        {loading && <div className="bot-msg typing">...</div>}
-      </div>
 
-      {/* Input */}
-      <ChatInput onSubmit={handleQuestionSubmit} />
+          {/* Input */}
+          <ChatInput onSubmit={handleQuestionSubmit} />
+        </>
+      )}
     </div>
   );
 }
