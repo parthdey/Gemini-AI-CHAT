@@ -8,6 +8,7 @@ import java.util.Map;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "https://gemini-ai-chat-apdb.vercel.app")
 @RequestMapping("/api/qna")
 public class AIController {
 
