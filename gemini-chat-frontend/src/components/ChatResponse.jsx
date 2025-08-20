@@ -1,40 +1,68 @@
+import React from "react";
+import { Accordion, Card } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const ChatResponse = ({ response }) => {
-    if (!response) {
-        return null;
-    }
-    
-    const {candidates, usageMetadata } = response;
+  if (!response) return null;
 
-    return (
-        <div className="container my-4">
-            <h3>Response</h3>
-        {candidates.map((candidate, index) => (
-            <div className="card mb-3" key={index}>
-            <div className="card-body">
-              <h5 className="card-title">Candidate {index + 1}</h5>
-              <p className="card-text">{candidate.content.parts[0].text}</p>
-              <h6>Citations:</h6>
-              <ul>
-                {candidate?.citationMetadata?.citationSources.map((source, idx) => (
-                    <li key={idx}>
-                        <a href={source.uri} target="_blank" rel="noopener noreferrer">
+  const { candidates, usageMetadata } = response;
+
+  return (
+    <div className="container my-4">
+      <h3 className="mb-3 text-primary">Chat Responses</h3>
+
+      {candidates.map((candidate, index) => (
+        <Card className="mb-3 shadow-sm" key={index}>
+          <Card.Header className="bg-light">
+            <strong>Candidate {index + 1}</strong>
+          </Card.Header>
+          <Card.Body>
+            <Card.Text>{candidate.content.parts[0].text}</Card.Text>
+
+            {candidate?.citationMetadata?.citationSources?.length > 0 && (
+              <Accordion>
+                <Accordion.Item eventKey="0">
+                  <Accordion.Header>Citations</Accordion.Header>
+                  <Accordion.Body>
+                    <ul className="mb-0 ps-3">
+                      {candidate.citationMetadata.citationSources.map((source, idx) => (
+                        <li key={idx}>
+                          <a
+                            href={source.uri}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-decoration-none"
+                          >
                             {source.uri}
-                        </a> {" "}
-                        (Indexes: {source.startIndex} - {source.endIndex})
-                    </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ))}
+                          </a>{" "}
+                          (Indexes: {source.startIndex} - {source.endIndex})
+                        </li>
+                      ))}
+                    </ul>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            )}
+          </Card.Body>
+        </Card>
+      ))}
 
-        <h4>Usage Metadata</h4>
-        <p>Prompt Tokens: {usageMetadata.promptTokenCount}</p>
-        <p>ProResponse Tokens: {usageMetadata.candidatesTokenCount}</p>
-        <p>Total Tokens: {usageMetadata.totalTokenCount}</p>
+      {usageMetadata && (
+        <div className="mt-3 p-3 bg-light rounded shadow-sm">
+          <h5 className="mb-2 text-secondary">Usage Metadata</h5>
+          <p className="mb-1">
+            <strong>Prompt Tokens:</strong> {usageMetadata.promptTokenCount}
+          </p>
+          <p className="mb-1">
+            <strong>Candidate Tokens:</strong> {usageMetadata.candidatesTokenCount}
+          </p>
+          <p className="mb-0">
+            <strong>Total Tokens:</strong> {usageMetadata.totalTokenCount}
+          </p>
         </div>
-    )
-}
+      )}
+    </div>
+  );
+};
 
 export default ChatResponse;
