@@ -59,19 +59,13 @@ function App() {
         <AuthCard onLogin={setUser} />
       ) : (
         <>
-          {/* Header */}
-          <header className="app-header bg-primary text-white flex justify-between items-center py-4 px-6">
-            {/* Title & welcome centered */}
-            <div className="flex-1 text-center">
-              <h1>Gemini ChatBot</h1>
-              <small>Welcome, {user} 👋</small>
-            </div>
+          <button 
+            className="dark-toggle" 
+            onClick={() => setDarkMode(!darkMode)}
+            >
+            {darkMode ? "🌞" : "🌚"}
+          </button>
 
-            {/* 🌙 Dark mode toggle on the RIGHT */}
-            <button onClick={toggleDarkMode} className="dark-toggle ml-4 text-2xl">
-              {darkMode ? "🌞" : "🌚"}
-            </button>
-          </header>
 
           {/* Chat Window */}
           <div className="chat-window p-3">

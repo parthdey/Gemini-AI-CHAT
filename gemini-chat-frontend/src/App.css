@@ -8,7 +8,7 @@
 /* Header */
 header {
   flex: 0 0 auto;
-  padding: 0.5rem 1rem;  /* reduced padding */
+  padding: 0.5rem 1rem;  
   /* height: 13vh; */
   position: relative; 
 }
@@ -179,13 +179,14 @@ header {
 }
 
 .dark-toggle {
-  position: absolute;
-  top: 8px;   /* push up/down */
-  right: 12px; /* keep it on right */
+  position: fixed;   /* floating, not tied to header */
+  top: 12px; 
+  left: 12px;
   background: transparent;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   cursor: pointer;
+  z-index: 1000; /* make sure it's above chat */
   transition: transform 0.2s;
 }
 
@@ -193,3 +194,15 @@ header {
   transform: scale(1.2);
 }
 
+.popup-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.dark-mode .popup-content {
+  background: #2a2a2a;
+  color: #f1f1f1;
+}
