@@ -8,6 +8,9 @@
 /* Header */
 header {
   flex: 0 0 auto;
+  padding: 0.5rem 1rem;  /* reduced padding */
+  /* height: 13vh; */
+  position: relative; 
 }
 
 /* Chat Window */
@@ -39,6 +42,61 @@ header {
   border-radius: 16px 16px 16px 0;
   max-width: 80%;
   word-wrap: break-word;
+  line-height: 1.5;
+}
+
+/* Markdown inside bot messages */
+.bot-msg h1,
+.bot-msg h2,
+.bot-msg h3 {
+  margin: 0.4em 0;
+  font-weight: 600;
+}
+
+.bot-msg h1 { font-size: 1.3rem; }
+.bot-msg h2 { font-size: 1.15rem; }
+.bot-msg h3 { font-size: 1rem; }
+
+.bot-msg p {
+  margin: 0.4em 0;
+}
+
+.bot-msg ul,
+.bot-msg ol {
+  margin: 0.4em 0 0.4em 1.2em;
+  padding: 0;
+}
+
+.bot-msg li {
+  margin: 0.25em 0;
+}
+
+.bot-msg a {
+  color: #007bff;
+  text-decoration: none;
+}
+.bot-msg a:hover {
+  text-decoration: underline;
+}
+
+/* Code blocks */
+.bot-msg code {
+  background: #f1f3f5;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.bot-msg pre {
+  background: #212529;
+  color: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 0.9rem;
+  margin: 0.5em 0;
 }
 
 /* Typing indicator */
@@ -46,17 +104,6 @@ header {
   font-style: italic;
   color: gray;
 }
-
-/* Input area */
-/* .container {
-  flex: 0 0 auto;
-  padding: 0.5rem;
-  background: white;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  border-top: 1px solid #ddd;
-} */
 
 /* Input box */
 .container input.form-control {
@@ -106,3 +153,43 @@ header {
     font-size: 1rem;
   }
 }
+
+/* 🌙 Dark Mode */
+.dark-mode {
+  background: #121212;
+  color: #f1f1f1;
+}
+
+.dark-mode .chat-window {
+  background: #1e1e1e;
+}
+
+.dark-mode .user-msg {
+  background: #0d6efd;
+  color: white;
+}
+
+.dark-mode .bot-msg {
+  background: #2a2a2a;
+  color: #f1f1f1;
+}
+
+.dark-mode header {
+  background: #222;
+}
+
+.dark-toggle {
+  position: absolute;
+  top: 8px;   /* push up/down */
+  right: 12px; /* keep it on right */
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.dark-toggle:hover {
+  transform: scale(1.2);
+}
+

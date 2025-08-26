@@ -3,17 +3,23 @@ import './App.css';
 import ChatInput from "./components/ChatInput";
 import { fetchChatResponse } from './services/api';
 import AuthCard from "./components/AuthCard";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const chatEndRef = useRef(null); // 👈 always declared
+  const [darkMode, setDarkMode] = useState(false);
+  const chatEndRef = useRef(null);
 
-  // ✅ Check localStorage for saved user
+  // ✅ Load user and theme from localStorage
   useEffect(() => {
     const savedUser = localStorage.getItem("chatUser");
     if (savedUser) setUser(savedUser);
+
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") setDarkMode(true);
   }, []);
 
   const handleQuestionSubmit = async (question) => {
@@ -37,23 +43,47 @@ function App() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // 🌙 Toggle dark mode
+  const toggleDarkMode = () => {
+    setDarkMode(prev => {
+      const newMode = !prev;
+      localStorage.setItem("theme", newMode ? "dark" : "light");
+      return newMode;
+    });
+  };
+
   return (
-    <div className='App'>
+    <div className={`App ${darkMode ? "dark-mode" : ""}`}>
       {/* If no user, show Auth screen */}
       {!user ? (
         <AuthCard onLogin={setUser} />
       ) : (
         <>
-          <header className='bg-primary text-white text-center py-4'>
-            <h1>Gemini ChatBot</h1>
-            <small>Welcome, {user} 👋</small>
+          {/* Header */}
+          <header className="app-header bg-primary text-white flex justify-between items-center py-4 px-6">
+            {/* Title & welcome centered */}
+            <div className="flex-1 text-center">
+              <h1>Gemini ChatBot</h1>
+              <small>Welcome, {user} 👋</small>
+            </div>
+
+            {/* 🌙 Dark mode toggle on the RIGHT */}
+            <button onClick={toggleDarkMode} className="dark-toggle ml-4 text-2xl">
+              {darkMode ? "🌞" : "🌚"}
+            </button>
           </header>
 
           {/* Chat Window */}
           <div className="chat-window p-3">
             {messages.map((msg, idx) => (
               <div key={idx} className={msg.sender === "user" ? "user-msg" : "bot-msg"}>
-                {msg.text}
+                {msg.sender === "bot" ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {msg.text}
+                  </ReactMarkdown>
+                ) : (
+                  msg.text
+                )}
               </div>
             ))}
             {loading && <div className="bot-msg typing">...</div>}
