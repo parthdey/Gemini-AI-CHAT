@@ -206,3 +206,20 @@ header {
   background: #2a2a2a;
   color: #f1f1f1;
 }
+
+.bot-msg pre {
+  background: #212529;
+  color: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 0.9rem;
+  margin: 0.5em 0;
+}
+
+.bot-msg pre code {
+  background: transparent !important;  /* remove white overlay */
+  color: #f8f9fa !important;           /* make text visible */
+  padding: 0;                          /* remove extra padding */
+}
