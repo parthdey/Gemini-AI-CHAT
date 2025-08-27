@@ -38,6 +38,21 @@ function App() {
     }
   };
 
+  // Load old messages on start
+useEffect(() => {
+  const savedMessages = localStorage.getItem("chatMessages");
+  if (savedMessages) {
+    setMessages(JSON.parse(savedMessages));
+  }
+}, []);
+
+// Save messages whenever they update
+useEffect(() => {
+  if (messages.length > 0) {
+    localStorage.setItem("chatMessages", JSON.stringify(messages));
+  }
+}, [messages]);
+
   // 👇 Auto-scroll
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -59,13 +74,13 @@ function App() {
         <AuthCard onLogin={setUser} />
       ) : (
         <>
+          {/* 🌙 Dark Mode Toggle */}
           <button 
             className="dark-toggle" 
-            onClick={() => setDarkMode(!darkMode)}
-            >
+            onClick={toggleDarkMode}
+          >
             {darkMode ? "🌞" : "🌚"}
           </button>
-
 
           {/* Chat Window */}
           <div className="chat-window p-3">
@@ -80,7 +95,16 @@ function App() {
                 )}
               </div>
             ))}
-            {loading && <div className="bot-msg typing">...</div>}
+
+            {/* 🔥 Animated Typing Indicator */}
+            {loading && (
+              <div className="typing">
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+              </div>
+            )}
+
             <div ref={chatEndRef} />
           </div>
 
