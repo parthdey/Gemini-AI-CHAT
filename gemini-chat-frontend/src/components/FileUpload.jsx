@@ -1,0 +1,68 @@
+// FileUpload.jsx - FIXED VERSION
+import React, { useRef } from "react";
+
+export default function FileUpload({ onUpload, onUploadId }) {
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    // Add sessionId for better tracking
+    formData.append("sessionId", "session_" + Date.now());
+
+    try {
+      // ✅ Use correct endpoint /api/qna/upload
+      const res = await fetch("http://localhost:8080/api/qna/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      console.log("File uploaded:", data);
+
+      // ✅ Pass uploadId back to parent component
+      if (data.uploadId) {
+        onUploadId(data.uploadId); // Pass uploadId to App.jsx
+        if (onUpload) onUpload(data); // Optional callback
+        alert(`File "${file.name}" uploaded successfully ✅\nChunks: ${data.chunks}`);
+      } else {
+        alert("Upload failed ❌ No uploadId returned");
+      }
+
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("File upload failed ❌");
+    }
+  };
+
+  const triggerFileSelect = () => {
+    fileInputRef.current.click();
+  };
+
+  return (
+    <>
+      <button
+        onClick={triggerFileSelect}
+        style={{
+          border: "1px solid #ccc",
+          borderRadius: "50%",
+          width: "40px",
+          height: "40px",
+          fontSize: "20px",
+          cursor: "pointer"
+        }}
+      >
+        +
+      </button>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+        accept=".pdf,.txt"
+      />
+    </>
+  );
+}
