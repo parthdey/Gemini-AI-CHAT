@@ -1,3 +1,4 @@
+// RagController.java (Optional - for testing)
 package com.ai.gemini_chat;
 
 import org.springframework.web.bind.annotation.*;
@@ -41,12 +42,10 @@ public class RagController {
         return Map.of(
                 "status", "uploaded",
                 "file", file.getOriginalFilename(),
-                "uploadId", ragResponse.get("uploadId"),   // ✅ clean JSON
+                "uploadId", ragResponse.get("uploadId"),
                 "chunks", ragResponse.get("chunks")
         );
     }
-
-
 
     @PostMapping("/ask")
     public Map<String, Object> askQuestion(@RequestBody Map<String, String> payload) {

@@ -27,7 +27,6 @@ public class RagServiceClient {
         this.webClient = builder.baseUrl(baseUrl).build();
     }
 
-    // Health check
     public String checkHealth() {
         try {
             return webClient.get()
@@ -42,7 +41,6 @@ public class RagServiceClient {
         }
     }
 
-    // Query docs normally
     public Map<String, Object> queryDocs(String query, int topK) {
         try {
             return webClient.post()
@@ -57,12 +55,10 @@ public class RagServiceClient {
         }
     }
 
-    // Overloaded default topK
     public Map<String, Object> queryDocs(String query) {
         return queryDocs(query, 3);
     }
 
-    // ✅ Overloaded with uploadId (namespace)
     public Map<String, Object> queryDocs(String query, String uploadId) {
         try {
             return webClient.post()
@@ -80,7 +76,6 @@ public class RagServiceClient {
         }
     }
 
-    // --- convenience method to get typed chunks ---
     @SuppressWarnings("unchecked")
     public List<String> queryChunks(String query, int topK) {
         Map<String, Object> resp = queryDocs(query, topK);
@@ -96,9 +91,8 @@ public class RagServiceClient {
         return queryChunks(query, 3);
     }
 
-    // ✅ Upload file → FastAPI returns uploadId
     public Map<String, Object> uploadFile(MultipartFile file) {
-        return uploadDoc(file); // alias to avoid duplicate logic
+        return uploadDoc(file);
     }
 
     public Map<String, Object> uploadDoc(MultipartFile file) {
@@ -126,7 +120,6 @@ public class RagServiceClient {
         }
     }
 
-    // ✅ Delete upload after use
     public void deleteUpload(String uploadId) {
         try {
             webClient.delete()
@@ -137,7 +130,6 @@ public class RagServiceClient {
                     .toBodilessEntity()
                     .block();
         } catch (Exception e) {
-            // log but don’t fail hard
             System.err.println("Failed to delete uploadId " + uploadId + ": " + e.getMessage());
         }
     }

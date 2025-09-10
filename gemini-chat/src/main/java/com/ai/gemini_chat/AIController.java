@@ -1,3 +1,4 @@
+// AIController.java
 package com.ai.gemini_chat;
 
 import lombok.AllArgsConstructor;
@@ -62,7 +63,7 @@ public class AIController {
             @RequestBody Map<String, String> payload) {
 
         String question = payload.get("question");
-        String uploadId = payload.get("uploadId"); // Get uploadId from request
+        String uploadId = payload.get("uploadId");
         String sessionId = payload.get("sessionId");
 
         if (question == null || question.isBlank()) {
@@ -72,7 +73,7 @@ public class AIController {
         }
 
         List<String> context = Collections.emptyList();
-        String responseType = "general"; // Track response type
+        String responseType = "general";
 
         // Check if we have a specific uploadId or session-based upload
         String targetUploadId = uploadId;
@@ -90,7 +91,7 @@ public class AIController {
 
                 if (!chunks.isEmpty()) {
                     context = chunks;
-                    responseType = "rag"; // Using RAG context
+                    responseType = "rag";
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -103,7 +104,7 @@ public class AIController {
         // Build prompt based on context availability
         String prompt;
         if (context.isEmpty()) {
-            prompt = question; // General Gemini response
+            prompt = question;
         } else {
             prompt = String.format(
                     "Based on the provided document context, answer the following question. " +
@@ -118,7 +119,7 @@ public class AIController {
 
         String geminiAnswer = qnAService.getAnswer(prompt);
 
-        // 🔥 AUTO CLEANUP: Delete upload after successful query
+        // AUTO CLEANUP: Delete upload after successful query
         if (targetUploadId != null && responseType.equals("rag")) {
             try {
                 ragServiceClient.deleteUpload(targetUploadId);
@@ -126,9 +127,9 @@ public class AIController {
                 if (sessionId != null) {
                     sessionUploadIds.remove(sessionId);
                 }
-                System.out.println("✅ Auto-cleaned uploadId: " + targetUploadId);
+                System.out.println("Auto-cleaned uploadId: " + targetUploadId);
             } catch (Exception e) {
-                System.err.println("❌ Cleanup failed for uploadId: " + targetUploadId + " - " + e.getMessage());
+                System.err.println("Cleanup failed for uploadId: " + targetUploadId + " - " + e.getMessage());
             }
         }
 
@@ -140,7 +141,6 @@ public class AIController {
         ));
     }
 
-    // Manual cleanup endpoint (optional)
     @DeleteMapping("/cleanup/{sessionId}")
     public ResponseEntity<Map<String, Object>> cleanupSession(@PathVariable String sessionId) {
         String uploadId = sessionUploadIds.remove(sessionId);
