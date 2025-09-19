@@ -14,8 +14,9 @@ export default function FileUpload({ onUpload, onUploadId }) {
     formData.append("sessionId", "session_" + Date.now());
 
     try {
-      // ✅ Use correct endpoint /api/qna/upload
-      const res = await fetch("http://localhost:8080/api/qna/upload", {
+      // Use environment variable for API URL
+      const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+      const res = await fetch(`${API_BASE_URL}/api/qna/upload`, {
         method: "POST",
         body: formData,
       });
