@@ -15,7 +15,10 @@ export default function FileUpload({ onUpload, onUploadId }) {
 
     try {
       // Use environment variable for API URL
-      const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+      const API_BASE_URL = import.meta.env.VITE_API_URL;
+      if (!API_BASE_URL) {
+        console.error("❌ VITE_API_URL is not set — check your Vercel environment variables.");
+  }
       const res = await fetch(`${API_BASE_URL}/api/qna/upload`, {
         method: "POST",
         body: formData,
