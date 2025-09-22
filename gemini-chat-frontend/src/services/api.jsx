@@ -1,69 +1,84 @@
-// FileUpload.jsx - FIXED VERSION
-import React, { useRef } from "react";
+// src/services/api.js
+// ✅ Get API URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-export default function FileUpload({ onUpload, onUploadId }) {
-  const fileInputRef = useRef(null);
+if (!API_BASE_URL) {
+  console.error("❌ VITE_API_URL is not set — check your Vercel environment variables.");
+  console.error("Available env vars:", import.meta.env);
+}
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+export const fetchChatResponse = async (question, uploadId = null) => {
+  try {
+    if (!API_BASE_URL) {
+      throw new Error("Backend URL not configured. Check environment variables.");
+    }
+
+    console.log("📤 Sending chat request to:", `${API_BASE_URL}/api/qna/ask`);
+    console.log("Question:", question);
+    console.log("Upload ID:", uploadId);
+
+    const requestBody = {
+      question: question,
+      sessionId: "session_" + Date.now()
+    };
+
+    // Add uploadId if provided (for document-based questions)
+    if (uploadId) {
+      requestBody.uploadId = uploadId;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/qna/ask`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("API Error:", response.status, errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("✅ Chat response received:", data);
+    
+    return data;
+  } catch (error) {
+    console.error("Chat API error:", error);
+    throw error;
+  }
+};
+
+// Optional: Export other API functions if you need them
+export const uploadFile = async (file, sessionId) => {
+  try {
+    if (!API_BASE_URL) {
+      throw new Error("Backend URL not configured. Check environment variables.");
+    }
 
     const formData = new FormData();
     formData.append("file", file);
-    // Add sessionId for better tracking
-    formData.append("sessionId", "session_" + Date.now());
+    formData.append("sessionId", sessionId || "session_" + Date.now());
 
-    try {
-      // Use environment variable for API URL
-      const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
-      const res = await fetch(`${API_BASE_URL}/api/qna/upload`, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      console.log("File uploaded:", data);
+    const response = await fetch(`${API_BASE_URL}/api/qna/upload`, {
+      method: "POST",
+      body: formData,
+    });
 
-      // ✅ Pass uploadId back to parent component
-      if (data.uploadId) {
-        onUploadId(data.uploadId); // Pass uploadId to App.jsx
-        if (onUpload) onUpload(data); // Optional callback
-        alert(`File "${file.name}" uploaded successfully ✅\nChunks: ${data.chunks}`);
-      } else {
-        alert("Upload failed ❌ No uploadId returned");
-      }
-
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("File upload failed ❌");
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Upload Error:", response.status, errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  };
 
-  const triggerFileSelect = () => {
-    fileInputRef.current.click();
-  };
-
-  return (
-    <>
-      <button
-        onClick={triggerFileSelect}
-        style={{
-          border: "1px solid #ccc",
-          borderRadius: "50%",
-          width: "40px",
-          height: "40px",
-          fontSize: "20px",
-          cursor: "pointer"
-        }}
-      >
-        +
-      </button>
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-        accept=".pdf,.txt"
-      />
-    </>
-  );
-}
+    const data = await response.json();
+    console.log("✅ File upload response:", data);
+    
+    return data;
+  } catch (error) {
+    console.error("Upload API error:", error);
+    throw error;
+  }
+};
